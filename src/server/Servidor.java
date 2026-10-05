@@ -2,6 +2,7 @@ package server;
 
 import java.util.*;
 import java.net.*;
+import java.io.*;
 
 public class Servidor {
     //Definicion de puerto
@@ -20,8 +21,14 @@ public class Servidor {
                 
                 // acepatacion del cliente
                 Socket socketCliente = serverSocket.accept(); 
-                
-                System.out.println("[SERVIDOR] ¡Alguien se conectó desde otra compu!");
+                System.out.println("[SERVIDOR] ¡Alguien se conectó desde otra PC!");
+
+                //Escribicion al cliente
+                PrintWriter salida = new PrintWriter(socketCliente.getOutputStream(), true);
+                salida.println("Bienvenido al servidor de Blackjack");  //Mensaje para el cliente
+
+                socketCliente.close();
+                System.out.println("[SERVIDOR] Conexión cerrada");
                 
             }
         //Error en el puerto
