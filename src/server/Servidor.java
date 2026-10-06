@@ -21,14 +21,16 @@ public class Servidor {
                 
                 // acepatacion del cliente
                 Socket socketCliente = serverSocket.accept(); 
-                System.out.println("[SERVIDOR] ¡Alguien se conectó desde otra PC!");
+                System.out.println("[SERVIDOR] ¡Jugador se conectó!");
 
-                //Escribicion al cliente
-                PrintWriter salida = new PrintWriter(socketCliente.getOutputStream(), true);
-                salida.println("Bienvenido al servidor de Blackjack");  //Mensaje para el cliente
-
-                socketCliente.close();
-                System.out.println("[SERVIDOR] Conexión cerrada");
+                //Craciacion del hilo
+                HiloCliente gestorCliente = new HiloCliente(socketCliente);
+                Thread hilo = new Thread(gestorCliente);
+                
+                // Encender
+                hilo.start(); 
+                
+                System.out.println("[SERVIDOR] Hilo delegado con éxito. Volviendo a esperar...");
                 
             }
         //Error en el puerto

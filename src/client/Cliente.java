@@ -1,5 +1,6 @@
 package client;
 
+import java.io.*;
 import java.net.*;
 
 public class Cliente {
@@ -13,7 +14,26 @@ public class Cliente {
         try (Socket socket = new Socket(IP_SERVIDOR, PUERTO_SERVIDOR)) {
             //Conexion exitosa
             System.out.println("[CLIENTE] ¡Conectado exitosamente!");
-            System.out.println("[CLIENTE] El juego terminará de inmediato porque es la versión básica.");
+
+            //Leer msj del server
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));     
+            PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in)); //Para que el jugador typee
+
+            String mensajeServidor;
+
+            while ((mensajeServidor = entrada.readLine()) != null) {
+                System.out.println("[SERVIDOR]: " + mensajeServidor); //imprimir msj para el jugador
+
+                if (mensajeServidor.contains("¿Qué querés hacer?") || mensajeServidor.contains("Ingresa")) {
+                    System.out.print("> ");
+                    String opcion = teclado.readLine(); // Esperando respuesta del jugador
+                    salida.println(opcion); // Lo manda al servidor por el cable
+                }
+            }
+
+            System.out.println("[CLIENTE] Conexión finalizada por el servidor.");
+
 
         } catch (Exception e) {
             //Error en la conexion

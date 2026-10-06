@@ -30,7 +30,7 @@ public class HiloCliente implements  Runnable{
     public void run() {
         try {
             // Bienvenida
-            enviarMensaje("¡Bienvenido al Blackjack! Conectado a tu hilo dedicado.");
+            enviarMensaje("Bienvenido al servidor de Blackjack");
             
             while (true) {
                 String texto = in.readLine(); 
