@@ -7,6 +7,7 @@ public class HiloCliente implements  Runnable{
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+      private String nombreJugador;
 
     public HiloCliente(Socket socket) {
         this.socket = socket;
@@ -31,6 +32,11 @@ public class HiloCliente implements  Runnable{
         try {
             // Bienvenida
             enviarMensaje("Bienvenido al servidor de Blackjack");
+
+            this.nombreJugador = in.readLine(); 
+            
+            enviarMensaje("Perfecto " + nombreJugador + ", ya estas registrado en la mesa. Esperando que arranque la partida...");
+            System.out.println("[SERVIDOR] El jugador en este hilo se registro como: " + nombreJugador);
             
             while (true) {
                 String texto = in.readLine(); 
