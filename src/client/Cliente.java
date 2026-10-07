@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 
 public class Cliente {
-    private static final String IP_SERVIDOR = "130.10.2.11"; // Ip de la PC
+    private static final String IP_SERVIDOR = "130.10.2.12"; // Ip de la PC
     private static final int PUERTO_SERVIDOR = 6000;      //puerto servidor
 
     public static void main(String[] args) {

@@ -21,7 +21,12 @@ public class Servidor {
                 
                 // acepatacion del cliente
                 Socket socketCliente = serverSocket.accept(); 
-                System.out.println("[SERVIDOR] ¡Jugador se conectó!");
+
+                //Obtener la ip del jugador
+                String ipCliente = socketCliente.getInetAddress().getHostAddress();
+                int puertoCliente = socketCliente.getPort(); //puerto de salida del jugador
+
+                System.out.println("[SERVIDOR] ¡Jugador conectado desde la IP: " + ipCliente + " (Puerto: " + puertoCliente + ")!");
 
                 //Craciacion del hilo
                 HiloCliente gestorCliente = new HiloCliente(socketCliente);

@@ -31,7 +31,7 @@ public class HiloCliente implements  Runnable{
     public void run() {
         try {
             // Bienvenida
-            enviarMensaje("Bienvenido al servidor de Blackjack");
+            enviarMensaje("Bienvenido al servidor de Blackjack \nIngresa el nombre");
 
             this.nombreJugador = in.readLine(); 
             
