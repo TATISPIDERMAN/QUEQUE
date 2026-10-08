@@ -60,7 +60,7 @@ public class Servidor {
         String[] palos = {"♥", "♦", "♣", "♠"};
         String[] valores = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "As"};
         
-        // Combinamos cada palo con cada valor (4 x 13 = 52 cartas)
+        // Combinamiento de cartas
         for (String palo : palos) {
             for (String valor : valores) {
                 baraja.add(valor + palo);
@@ -70,6 +70,33 @@ public class Servidor {
         //Mezclamos la lista
         Collections.shuffle(baraja); 
         System.out.println("[SERVIDOR] ¡Mazo de cartas creado y mezclado con éxito!");
+    }
+
+    public static int calcularPuntos(List<String> mano) {
+        int puntos = 0;
+        int contadorAses = 0;
+
+        for (String carta : mano) {
+            // Le quitamos el palo(♥, ♦, ♣, ♠)
+            String valor = carta.substring(0, carta.length() - 1);
+
+            if (valor.equals("J") || valor.equals("Q") || valor.equals("K")) {
+                puntos += 10; // Si es j,q o k valen 10
+            } else if (valor.equals("As")) {
+                contadorAses++; //Cuantos AS tiene el jugador
+                puntos += 11;  //Cuanto vale el As
+            } else {
+                puntos += Integer.parseInt(valor); //Sumamos los valores si no son letras
+            }
+        }
+
+        // Si tenemos AS y nos pasamos de 21:
+        while (puntos > 21 && contadorAses > 0) {
+            puntos -= 10; //Restamos 10
+            contadorAses--; //Restamos AS del jugador
+        }
+
+        return puntos;  //devuelve los puntos contados
     }
 
 }
