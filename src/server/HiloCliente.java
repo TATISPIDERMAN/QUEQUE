@@ -2,12 +2,14 @@ package server;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class HiloCliente implements  Runnable{
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-      private String nombreJugador;
+    private String nombreJugador;
+    private List<String> mano = new ArrayList<>();
 
     public HiloCliente(Socket socket) {
         this.socket = socket;
@@ -25,6 +27,13 @@ public class HiloCliente implements  Runnable{
         if (out != null) {
             out.println(mensaje);
         }
+    }
+
+    public void recibirCarta(String carta) {
+        this.mano.add(carta); // Carta del jugador
+        
+        //le enviamos un msj para que vea que carta le salio
+        enviarMensaje("[CARTAS] Recibiste: " + carta + ".\nTu mano actual: " + mano + " (Puntos: " + Servidor.calcularPuntos(mano) + ")");
     }
 
     @Override

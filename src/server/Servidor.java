@@ -9,6 +9,8 @@ public class Servidor {
     private static final int PUERTO = 6000;
     public static List<HiloCliente> jugadores = Collections.synchronizedList(new ArrayList<>());
     private static List<String> baraja = new ArrayList<>();
+    private static List<String> cartasCrupier = new ArrayList<>();
+    private static boolean juegoIniciado = false;
 
     public static void main(String[] args) {
         System.out.println("[SERVIDOR] Intentando encender...");
@@ -106,6 +108,42 @@ public class Servidor {
         }
         // Aggaramos la primera carta
         return baraja.remove(0);
+    }
+
+    public static synchronized void iniciarPartida() {
+        if (juegoIniciado || jugadores.isEmpty()) return; 
+        
+        juegoIniciado = true;
+        difundirMensaje("[JUEGO] ¡La partida ha comenzado! Siguiendo secuencia de reparto...");
+
+        // El crupier le da una carta al jugador
+        for (HiloCliente jugador : jugadores) {
+            jugador.recibirCarta(tomarCarta());
+        }
+
+        // Crupier se da una carta
+        cartasCrupier.add(tomarCarta());
+        difundirMensaje("[CRUPIER] 1° carta: " + cartasCrupier.get(0));
+
+        // Le da otra carta al jugador
+        for (HiloCliente jugador : jugadores) {
+            jugador.recibirCarta(tomarCarta());
+        }
+
+        //El crupier se da otra carta pero esta no es visible
+        cartasCrupier.add(tomarCarta());
+        difundirMensaje("[CRUPIER] 2° carta boca abajo.");
+
+        // Le preguntamos que quiere hacer
+        difundirMensaje("[JUEGO] Reparto inicial completo. Comienza la ronda de decisiones.");
+    }
+
+    public static void difundirMensaje(String mensaje) {
+        synchronized (jugadores) {
+            for (HiloCliente jugador : jugadores) {
+                jugador.enviarMensaje(mensaje);
+            }
+        }
     }
 
 }
