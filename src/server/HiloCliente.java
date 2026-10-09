@@ -23,6 +23,10 @@ public class HiloCliente implements  Runnable{
         }
     }
 
+    public String getNombre() {
+        return this.nombreJugador;
+    }
+
     public void enviarMensaje(String mensaje) {
         if (out != null) {
             out.println(mensaje);
