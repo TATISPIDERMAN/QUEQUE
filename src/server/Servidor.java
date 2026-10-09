@@ -154,6 +154,7 @@ public class Servidor {
         // Si ya jugaron todos. Turno del crupier
         if (turnoActual >= jugadores.size()) {
             difundirMensaje("[JUEGO] Todos los jugadores han decidido. Turno del Crupier...");
+            jugarCrupier(); 
             return;
         }
 
@@ -165,6 +166,53 @@ public class Servidor {
 
         // msj para el jugador de quien es el turno
         jugadorActual.enviarMensaje("Es tu turno. ¿Qué querés hacer? Escribí 'pedir' o 'plantarse'.");
+    }
+
+    private static void jugarCrupier() {
+        // Mostramos las 2 cartas del crupier
+        difundirMensaje("[CRUPIER] Mi mano actual: " + cartasCrupier + " (Puntos: " + calcularPuntos(cartasCrupier) + ")");
+        
+        // si el crupier tiene menos de 17 pide cartas
+        while (calcularPuntos(cartasCrupier) < 17) {
+            String nuevaCarta = tomarCarta();
+            cartasCrupier.add(nuevaCarta);
+            difundirMensaje("[CRUPIER] Saco carta: " + nuevaCarta + " (Puntos: " + calcularPuntos(cartasCrupier) + ")");
+        }
+
+        // definimos ganadores
+        evaluarGanadores();
+    }
+
+    private static void evaluarGanadores() {
+        int puntosCrupier = calcularPuntos(cartasCrupier);
+        
+        difundirMensaje("\n================ RESULTADOS FINALES ================");
+        if (puntosCrupier > 21) {
+            difundirMensaje("[CRUPIER] ¡Me pasé de 21 puntos! (" + puntosCrupier + ")");
+        } else {
+            difundirMensaje("[CRUPIER] Puntos finales de la casa: " + puntosCrupier);
+        }
+        difundirMensaje("----------------------------------------------------");
+
+        // Quien gano
+        for (HiloCliente jugador : jugadores) {
+            int puntosJugador = calcularPuntos(jugador.getMano());
+            String nombre = jugador.getNombre();
+
+            if (puntosJugador > 21) {
+                difundirMensaje("❌ " + nombre + " perdió (Se pasó con " + puntosJugador + " puntos).");
+            } else if (puntosCrupier > 21) {
+                difundirMensaje("🏆 " + nombre + " ganó (" + puntosJugador + " puntos). ¡La casa se pasó!");
+            } else if (puntosJugador > puntosCrupier) {
+                difundirMensaje("🏆 " + nombre + " ganó (" + puntosJugador + " vs " + puntosCrupier + ").");
+            } else if (puntosJugador < puntosCrupier) {
+                difundirMensaje("❌ " + nombre + " perdió (" + puntosJugador + " vs " + puntosCrupier + ").");
+            } else {
+                difundirMensaje("🤝 " + nombre + " empató con la casa (" + puntosJugador + " puntos).");
+            }
+        }
+        difundirMensaje("====================================================\n");
+        difundirMensaje("[SERVIDOR] Partida finalizada de forma limpia.");
     }
 
 }

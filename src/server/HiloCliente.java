@@ -27,6 +27,10 @@ public class HiloCliente implements  Runnable{
         return this.nombreJugador;
     }
 
+    public java.util.List<String> getMano() {
+        return this.mano;
+    }
+
     public void enviarMensaje(String mensaje) {
         if (out != null) {
             out.println(mensaje);
@@ -51,9 +55,42 @@ public class HiloCliente implements  Runnable{
             enviarMensaje("Perfecto " + nombreJugador + ", ya estas registrado en la mesa. Esperando que arranque la partida...");
             System.out.println("[SERVIDOR] El jugador en este hilo se registro como: " + nombreJugador);
             
-            while (true) {
-                String texto = in.readLine(); 
-                if (texto == null) break; // se desconecta, rompemos el bucle
+            String texto;
+            while ((texto = in.readLine()) != null) {
+                // Pasamos a minúsculas y quitamos espacios
+                String comando = texto.trim().toLowerCase(); 
+
+                if (comando.equals("pedir")) {
+                    // crupier le da otra carta mas
+                    String nuevaCarta = Servidor.tomarCarta();
+                    recibirCarta(nuevaCarta);
+                    
+                    // Avisamos a los demás
+                    Servidor.difundirMensaje("[JUEGO] " + nombreJugador + " pidio una carta.");
+
+                    // Calculamos los puntos al pedir otra carta
+                    int puntosActuales = Servidor.calcularPuntos(this.mano);
+                    if (puntosActuales > 21) {
+                        enviarMensaje("[❌] ¡Te pasaste de 21 puntos!.");
+                        Servidor.difundirMensaje("[JUEGO] " + nombreJugador + " se paso de 21 con " + puntosActuales + " puntos.");
+                        
+                        // Si se pasó avanzamos de turno
+                        Servidor.avanzarTurno(); 
+                    } else {
+                        // Si no se pasó, le volvemos a preguntar si quiere seguir pidiendo o plantarse
+                        enviarMensaje("¿Qué querés hacer? Escribí 'pedir' o 'plantarse'.");
+                    }
+
+                } else if (comando.equals("plantarse")) {
+                    // avisamos que hizo y avanzamos turno
+                    Servidor.difundirMensaje("[JUEGO] " + nombreJugador + " se ha plantado con " + Servidor.calcularPuntos(this.mano) + " puntos.");
+                    
+                    Servidor.avanzarTurno();
+                    
+                } else {
+                    // Comando inválido
+                    enviarMensaje("Comando no reconocido. Por favor, escribí 'pedir' o 'plantarse'.");
+                }
             }
 
         } catch (Exception e) {
