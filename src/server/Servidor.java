@@ -99,4 +99,13 @@ public class Servidor {
         return puntos;  //devuelve los puntos contados
     }
 
+    public static synchronized String tomarCarta() {
+        if (baraja.isEmpty()) {
+            // Si no hay mas cartas Mezclamos
+            inicializarBaraja(); 
+        }
+        // Aggaramos la primera carta
+        return baraja.remove(0);
+    }
+
 }
