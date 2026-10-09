@@ -25,7 +25,7 @@ public class Cliente {
             while ((mensajeServidor = entrada.readLine()) != null) {
                 System.out.println("[SERVIDOR]: " + mensajeServidor); //imprimir msj para el jugador
 
-                if (mensajeServidor.contains("¿Qué querés hacer?") || mensajeServidor.contains("Ingresa")) {
+                if (mensajeServidor.contains("¿Qué querés hacer?") || mensajeServidor.contains("Ingresa") || mensajeServidor.contains("Escribí") || mensajeServidor.contains("Comando no reconocido")) {
                     System.out.print("> ");
                     String opcion = teclado.readLine(); // Esperando respuesta del jugador
                     salida.println(opcion); // Lo manda al servidor por el cable

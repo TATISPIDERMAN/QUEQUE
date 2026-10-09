@@ -41,7 +41,7 @@ public class HiloCliente implements  Runnable{
         this.mano.add(carta); // Carta del jugador
         
         //le enviamos un msj para que vea que carta le salio
-        enviarMensaje("[CARTAS] Recibiste: " + carta + ".\nTu mano actual: " + mano + " (Puntos: " + Servidor.calcularPuntos(mano) + ")");
+        enviarMensaje("[CARTAS] Recibiste: " + carta + ".Tu mano actual: " + mano + " (Puntos: " + Servidor.calcularPuntos(mano) + ")");
     }
 
     @Override
@@ -52,13 +52,27 @@ public class HiloCliente implements  Runnable{
 
             this.nombreJugador = in.readLine(); 
             
-            enviarMensaje("Perfecto " + nombreJugador + ", ya estas registrado en la mesa. Esperando que arranque la partida...");
+            enviarMensaje("Perfecto " + nombreJugador + ", ya estas registrado en la mesa. \nEscribí 'iniciar' para arrancar la partida.");
             System.out.println("[SERVIDOR] El jugador en este hilo se registro como: " + nombreJugador);
             
             String texto;
             while ((texto = in.readLine()) != null) {
                 // Pasamos a minúsculas y quitamos espacios
                 String comando = texto.trim().toLowerCase(); 
+
+                if (comando.equals("iniciar")) {
+                    if (Servidor.juegoIniciado) {
+                        enviarMensaje("La partida ya está en curso.");
+                    } else {
+                        Servidor.iniciarPartida(); //Iniciarmos partida si no esta en curso
+                    }
+                    continue;
+                }
+
+                if (!Servidor.juegoIniciado) {
+                    enviarMensaje("El juego aún no comenzó. Escribí 'iniciar' para arrancar.");
+                    continue; // Continua con el codigho
+                }
 
                 if (comando.equals("pedir")) {
                     // crupier le da otra carta mas

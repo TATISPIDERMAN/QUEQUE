@@ -9,7 +9,7 @@ public class Servidor {
     public static List<HiloCliente> jugadores = Collections.synchronizedList(new ArrayList<>());
     private static List<String> baraja = new ArrayList<>();
     private static List<String> cartasCrupier = new ArrayList<>();
-    private static boolean juegoIniciado = false;
+    public static boolean juegoIniciado = false;
     private static int turnoActual = 0;
 
     public static void main(String[] args) {
@@ -137,8 +137,7 @@ public class Servidor {
         difundirMensaje("[CRUPIER] 2° carta boca abajo.");
 
         // Le preguntamos que quiere hacer
-        difundirMensaje("[JUEGO] Reparto inicial completo. Comienza la ronda de decisiones.");
-        turnoActual = 0; // Arranca el primero de la lista
+        turnoActual = -1; // Arranca el primero de la lista
         avanzarTurno();
     }
 
@@ -151,6 +150,7 @@ public class Servidor {
     }
 
     public static synchronized void avanzarTurno() {
+        turnoActual++; 
         // Si ya jugaron todos. Turno del crupier
         if (turnoActual >= jugadores.size()) {
             difundirMensaje("[JUEGO] Todos los jugadores han decidido. Turno del Crupier...");
@@ -165,7 +165,7 @@ public class Servidor {
         difundirMensaje("[TURNO] Es el turno de " + jugadorActual.getNombre() + ".");
 
         // msj para el jugador de quien es el turno
-        jugadorActual.enviarMensaje("Es tu turno. ¿Qué querés hacer? Escribí 'pedir' o 'plantarse'.");
+        jugadorActual.enviarMensaje("Es tu turno. ¿Qué querés hacer? Escribí 'pedir' o 'plantarse'. ");
     }
 
     private static void jugarCrupier() {
