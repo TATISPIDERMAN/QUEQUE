@@ -25,16 +25,22 @@ public class Cliente {
         /** Iniciando conexion */
         System.out.println("[CLIENTE] Intentando conectar al servidor...");
 
+        try {
+            new ProcessBuilder("cmd", "/c", "chcp 65001").inheritIO().start().waitFor();
+        } catch (Exception e) {
+            // Si no está en Windows (ej: Linux o Mac), ignora el comando de arriba
+        }
+
         try (Socket socket = new Socket(IP_SERVIDOR, PUERTO_SERVIDOR)) {
             /** Conexion exitosa */
             System.out.println("[CLIENTE] ¡Conectado exitosamente!");
 
-            /** @param entrada Leer msj del server */
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));     
-            PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
+            /** @param entrada Leer msj del server en UTF-8 */
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));     
+            /** Forzamos al escritor a mandar bytes en UTF-8 por el cable */
+            PrintWriter salida = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
             /** @param teclado Para que el jugador typee */
             BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in)); 
-
             String mensajeServidor;
 
             while ((mensajeServidor = entrada.readLine()) != null) {

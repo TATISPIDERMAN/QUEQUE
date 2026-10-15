@@ -25,9 +25,9 @@ public class HiloCliente implements Runnable {
     public HiloCliente(Socket socket) {
         this.socket = socket;
         try {
-            /** Leer datos e imprimir */
-            this.out = new PrintWriter(socket.getOutputStream(), true);
-            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            /** Leer datos e imprimir (Forzamos UTF-8 de entrada y salida) */
+            this.out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
         } catch (Exception e) {
             /** @throws Exception error en el hilo */
             System.err.println("[HILO] Error al crear flujos: " + e.getMessage());
