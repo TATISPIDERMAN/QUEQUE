@@ -95,7 +95,7 @@ public class HiloCliente implements Runnable {
                 /** Pasamos a minúsculas y quitamos espacios */
                 String comando = texto.trim().toLowerCase(); 
 
-                if (comando.equals("iniciar")) {
+                if (comando.equals("iniciar") || comando.equals("i")) {
                     if (Servidor.juegoIniciado) {
                         enviarMensaje("La partida ya está en curso.");
                     } else {
@@ -111,7 +111,7 @@ public class HiloCliente implements Runnable {
                     continue; 
                 }
 
-                if (comando.equals("pedir")) {
+                if (comando.equals("pedir") || comando.equals("p")) {
                     /** crupier le da otra carta mas */
                     String nuevaCarta = Servidor.tomarCarta();
                     recibirCarta(nuevaCarta);
@@ -132,7 +132,7 @@ public class HiloCliente implements Runnable {
                         enviarMensaje("¿Qué querés hacer? Escribí 'pedir' o 'plantarse'.");
                     }
 
-                } else if (comando.equals("plantarse")) {
+                } else if (comando.equals("plantarse") || comando.equals("pl")) {
                     /** avisamos que hizo y avanzamos turno */
                     Servidor.difundirMensaje("[JUEGO] " + nombreJugador + " se ha plantado con " + Servidor.calcularPuntos(this.mano) + " puntos.");
                     

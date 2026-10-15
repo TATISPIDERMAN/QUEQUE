@@ -12,7 +12,7 @@ import java.net.*;
  */
 public class Cliente {
     /** @see IP_SERVIDOR Ip de la PC */
-    private static final String IP_SERVIDOR = "130.10.1.11"; 
+    private static final String IP_SERVIDOR = "130.10.2.11"; 
     /** @see PUERTO_SERVIDOR puerto servidor */
     private static final int PUERTO_SERVIDOR = 6000;      
 

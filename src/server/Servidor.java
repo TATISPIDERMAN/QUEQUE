@@ -1,7 +1,8 @@
 package server;
 
-import java.util.*;
 import java.net.*;
+import java.util.*;
+
 
 /**
  * Clase Servidor para coordinar el juego multijugador de Blackjack.
@@ -146,31 +147,39 @@ public class Servidor {
 
     /**
      * Da inicio a la partida y reparte las cartas correspondientes.
+     * @throws InterruptedException 
      */
-    public static synchronized void iniciarPartida() {
+    public static synchronized void iniciarPartida() throws InterruptedException {
         if (juegoIniciado || jugadores.isEmpty())
             return;
 
         juegoIniciado = true;
         difundirMensaje("[JUEGO] ¡La partida ha comenzado! Siguiendo secuencia de reparto...");
 
+        /** Damos 1 segundo de suspenso antes de arrancar */
+        Thread.sleep(1500);
+
         /** El crupier le da una carta al jugador */
         for (HiloCliente jugador : jugadores) {
             jugador.recibirCarta(tomarCarta());
+            Thread.sleep(3000); /** Pausa entre jugadores */
         }
 
         /** Crupier se da una carta */
         cartasCrupier.add(tomarCarta());
         difundirMensaje("[CRUPIER] 1° carta: " + cartasCrupier.get(0));
+        Thread.sleep(3000); /** Pausa para leer la carta del crupier */
 
         /** Le da otra carta al jugador */
         for (HiloCliente jugador : jugadores) {
             jugador.recibirCarta(tomarCarta());
+            Thread.sleep(3000);
         }
 
         /** El crupier se da otra carta pero esta no es visible */
         cartasCrupier.add(tomarCarta());
         difundirMensaje("[CRUPIER] 2° carta boca abajo.");
+        Thread.sleep(4500); /** Pausa dramática antes de empezar los turnos */
 
         /** Le preguntamos que quiere hacer */
         /** Arranca el primero de la lista */
