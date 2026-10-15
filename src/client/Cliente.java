@@ -6,7 +6,7 @@ import java.net.*;
 /**
  * Clase Cliente para el juego de Blackjack.
  * 
- * @author TATISPIDERMAN
+ * @author Ignacio Alvarez
  * @version 1.0
  * @see server.Servidor
  */

@@ -3,8 +3,14 @@ package server;
 import java.util.*;
 import java.net.*;
 
+/**
+ * Clase Servidor para coordinar el juego multijugador de Blackjack.
+ * 
+ * @author Ignacio Alvarez
+ * @version 1.0
+ */
 public class Servidor {
-    // Definicion de puerto
+    /** Definicion de puerto */
     private static final int PUERTO = 6000;
     public static List<HiloCliente> jugadores = Collections.synchronizedList(new ArrayList<>());
     private static List<String> baraja = new ArrayList<>();
@@ -12,105 +18,135 @@ public class Servidor {
     public static boolean juegoIniciado = false;
     private static int turnoActual = 0;
 
+    /**
+     * Método principal para iniciar el servidor de red.
+     * 
+     * @param args Argumentos de la línea de comandos
+     */
     public static void main(String[] args) {
         System.out.println("[SERVIDOR] Intentando encender...");
 
         inicializarBaraja();
 
-        // Iniciar puerto
+        /** Iniciar puerto */
         try (ServerSocket serverSocket = new ServerSocket(PUERTO)) {
             System.out.println("[SERVIDOR] ¡Encendido! Escuchando en el puerto " + PUERTO);
             System.out.println("[SERVIDOR] Esperando que se conecte un cliente...");
 
-            // Bucle de espera
+            /** Bucle de espera */
             while (true) {
 
-                // acepatacion del cliente
+                /** acepatacion del cliente */
                 Socket socketCliente = serverSocket.accept();
 
-                // Obtener la ip del jugador
+                /** Obtener la ip del jugador */
                 String ipCliente = socketCliente.getInetAddress().getHostAddress();
-                int puertoCliente = socketCliente.getPort(); // puerto de salida del jugador
+                /** puerto de salida del jugador */
+                int puertoCliente = socketCliente.getPort(); 
 
                 System.out.println("[SERVIDOR] ¡Jugador conectado desde la IP: " + ipCliente + " (Puerto: "
                         + puertoCliente + ")!");
 
-                // Craciacion del hilo
+                /** Craciacion del hilo */
                 HiloCliente gestorCliente = new HiloCliente(socketCliente);
 
-                // Agragar jugador en la mesa
+                /** Agragar jugador en la mesa */
                 jugadores.add(gestorCliente);
                 System.out.println("[SERVIDOR] Jugador agregado a la lista. Total en mesa: " + jugadores.size());
 
                 Thread hilo = new Thread(gestorCliente);
 
-                // Encender
+                /** Encender */
                 hilo.start();
 
                 System.out.println("[SERVIDOR] Hilo delegado con éxito. Volviendo a esperar...");
 
             }
-            // Error en el puerto
         } catch (Exception e) {
+            /** @throws Exception Error en el puerto */
             System.err.println("[SERVIDOR] Error crítico: No se pudo abrir el puerto. " + e.getMessage());
         }
     }
 
+    /**
+     * Inicializa y mezcla el mazo de cartas.
+     */
     public static void inicializarBaraja() {
-        baraja.clear(); // Clearamos
+        /** Clearamos */
+        baraja.clear(); 
 
-        // Valores y palos
+        /** Valores y palos */
         String[] palos = { "♥", "♦", "♣", "♠" };
         String[] valores = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "As" };
 
-        // Combinamiento de cartas
+        /** Combinamiento de cartas */
         for (String palo : palos) {
             for (String valor : valores) {
                 baraja.add(valor + palo);
             }
         }
 
-        // Mezclamos la lista
+        /** Mezclamos la lista */
         Collections.shuffle(baraja);
         System.out.println("[SERVIDOR] ¡Mazo de cartas creado y mezclado con éxito!");
     }
 
+    /**
+     * Calcula el puntaje total de la mano de un jugador.
+     * 
+     * @param mano Lista de cartas obtenidas por el jugador
+     * @return devuelve los puntos contados
+     */
     public static int calcularPuntos(List<String> mano) {
         int puntos = 0;
         int contadorAses = 0;
 
         for (String carta : mano) {
-            // Le quitamos el palo(♥, ♦, ♣, ♠)
+            /** Le quitamos el palo(♥, ♦, ♣, ♠) */
             String valor = carta.substring(0, carta.length() - 1);
 
             if (valor.equals("J") || valor.equals("Q") || valor.equals("K")) {
-                puntos += 10; // Si es j,q o k valen 10
+                /** Si es j,q o k valen 10 */
+                puntos += 10; 
             } else if (valor.equals("As")) {
-                contadorAses++; // Cuantos AS tiene el jugador
-                puntos += 11; // Cuanto vale el As
+                /** Cuantos AS tiene el jugador */
+                contadorAses++; 
+                /** Cuanto vale el As */
+                puntos += 11; 
             } else {
-                puntos += Integer.parseInt(valor); // Sumamos los valores si no son letras
+                /** Sumamos los valores si no son letras */
+                puntos += Integer.parseInt(valor); 
             }
         }
 
-        // Si tenemos AS y nos pasamos de 21:
+        /** Si tenemos AS y nos pasamos de 21: */
         while (puntos > 21 && contadorAses > 0) {
-            puntos -= 10; // Restamos 10
-            contadorAses--; // Restamos AS del jugador
+            /** Restamos 10 */
+            puntos -= 10; 
+            /** Restamos AS del jugador */
+            contadorAses--; 
         }
 
-        return puntos; // devuelve los puntos contados
+        return puntos; 
     }
 
+    /**
+     * Toma la carta superior del mazo.
+     * 
+     * @return La carta removida de la baraja
+     */
     public static synchronized String tomarCarta() {
         if (baraja.isEmpty()) {
-            // Si no hay mas cartas Mezclamos
+            /** Si no hay mas cartas Mezclamos */
             inicializarBaraja();
         }
-        // Aggaramos la primera carta
+        /** Aggaramos la primera carta */
         return baraja.remove(0);
     }
 
+    /**
+     * Da inicio a la partida y reparte las cartas correspondientes.
+     */
     public static synchronized void iniciarPartida() {
         if (juegoIniciado || jugadores.isEmpty())
             return;
@@ -118,29 +154,35 @@ public class Servidor {
         juegoIniciado = true;
         difundirMensaje("[JUEGO] ¡La partida ha comenzado! Siguiendo secuencia de reparto...");
 
-        // El crupier le da una carta al jugador
+        /** El crupier le da una carta al jugador */
         for (HiloCliente jugador : jugadores) {
             jugador.recibirCarta(tomarCarta());
         }
 
-        // Crupier se da una carta
+        /** Crupier se da una carta */
         cartasCrupier.add(tomarCarta());
         difundirMensaje("[CRUPIER] 1° carta: " + cartasCrupier.get(0));
 
-        // Le da otra carta al jugador
+        /** Le da otra carta al jugador */
         for (HiloCliente jugador : jugadores) {
             jugador.recibirCarta(tomarCarta());
         }
 
-        // El crupier se da otra carta pero esta no es visible
+        /** El crupier se da otra carta pero esta no es visible */
         cartasCrupier.add(tomarCarta());
         difundirMensaje("[CRUPIER] 2° carta boca abajo.");
 
-        // Le preguntamos que quiere hacer
-        turnoActual = -1; // Arranca el primero de la lista
+        /** Le preguntamos que quiere hacer */
+        /** Arranca el primero de la lista */
+        turnoActual = -1; 
         avanzarTurno();
     }
 
+    /**
+     * Difunde un mensaje de red a toda la mesa de juego.
+     * 
+     * @param mensaje Cadena de caracteres a enviar
+     */
     public static void difundirMensaje(String mensaje) {
         synchronized (jugadores) {
             for (HiloCliente jugador : jugadores) {
@@ -149,40 +191,49 @@ public class Servidor {
         }
     }
 
+    /**
+     * Incrementa el índice de turnos y notifica al jugador correspondiente.
+     */
     public static synchronized void avanzarTurno() {
         turnoActual++; 
-        // Si ya jugaron todos. Turno del crupier
+        /** Si ya jugaron todos. Turno del crupier */
         if (turnoActual >= jugadores.size()) {
             difundirMensaje("[JUEGO] Todos los jugadores han decidido. Turno del Crupier...");
             jugarCrupier(); 
             return;
         }
 
-        // de quien es el turno
+        /** de quien es el turno */
         HiloCliente jugadorActual = jugadores.get(turnoActual);
 
-        // Avisamos de quien es el turno
+        /** Avisamos de quien es el turno */
         difundirMensaje("[TURNO] Es el turno de " + jugadorActual.getNombre() + ".");
 
-        // msj para el jugador de quien es el turno
+        /** msj para el jugador de quien es el turno */
         jugadorActual.enviarMensaje("Es tu turno. ¿Qué querés hacer? Escribí 'pedir' o 'plantarse'. ");
     }
 
+    /**
+     * Controla el juego automático del Crupier de la casa.
+     */
     private static void jugarCrupier() {
-        // Mostramos las 2 cartas del crupier
+        /** Mostramos las 2 cartas del crupier */
         difundirMensaje("[CRUPIER] Mi mano actual: " + cartasCrupier + " (Puntos: " + calcularPuntos(cartasCrupier) + ")");
         
-        // si el crupier tiene menos de 17 pide cartas
+        /** si el crupier tiene menos de 17 pide cartas */
         while (calcularPuntos(cartasCrupier) < 17) {
             String nuevaCarta = tomarCarta();
             cartasCrupier.add(nuevaCarta);
             difundirMensaje("[CRUPIER] Saco carta: " + nuevaCarta + " (Puntos: " + calcularPuntos(cartasCrupier) + ")");
         }
 
-        // definimos ganadores
+        /** definimos ganadores */
         evaluarGanadores();
     }
 
+    /**
+     * Evalúa las manos finales y determina quién venció a la casa.
+     */
     private static void evaluarGanadores() {
         int puntosCrupier = calcularPuntos(cartasCrupier);
         
@@ -194,7 +245,7 @@ public class Servidor {
         }
         difundirMensaje("----------------------------------------------------");
 
-        // Quien gano
+        /** Quien gano */
         for (HiloCliente jugador : jugadores) {
             int puntosJugador = calcularPuntos(jugador.getMano());
             String nombre = jugador.getNombre();
@@ -212,7 +263,6 @@ public class Servidor {
             }
         }
         difundirMensaje("====================================================\n");
-        difundirMensaje("[SERVIDOR] Partida finalizada de forma limpia.");
+        difundirMensaje("[SERVIDOR] Partida finalizada.");
     }
-
 }
