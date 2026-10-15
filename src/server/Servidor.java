@@ -246,32 +246,48 @@ public class Servidor {
     private static void evaluarGanadores() {
         int puntosCrupier = calcularPuntos(cartasCrupier);
         
-        difundirMensaje("\n================ RESULTADOS FINALES ================");
-        if (puntosCrupier > 21) {
-            difundirMensaje("[CRUPIER] ¡Me pasé de 21 puntos! (" + puntosCrupier + ")");
-        } else {
-            difundirMensaje("[CRUPIER] Puntos finales de la casa: " + puntosCrupier);
-        }
-        difundirMensaje("----------------------------------------------------");
-
-        /** Quien gano */
-        for (HiloCliente jugador : jugadores) {
-            int puntosJugador = calcularPuntos(jugador.getMano());
-            String nombre = jugador.getNombre();
-
-            if (puntosJugador > 21) {
-                difundirMensaje("❌ " + nombre + " perdió (Se pasó con " + puntosJugador + " puntos).");
-            } else if (puntosCrupier > 21) {
-                difundirMensaje("🏆 " + nombre + " ganó (" + puntosJugador + " puntos). ¡La casa se pasó!");
-            } else if (puntosJugador > puntosCrupier) {
-                difundirMensaje("🏆 " + nombre + " ganó (" + puntosJugador + " vs " + puntosCrupier + ").");
-            } else if (puntosJugador < puntosCrupier) {
-                difundirMensaje("❌ " + nombre + " perdió (" + puntosJugador + " vs " + puntosCrupier + ").");
+        try {
+            /** Pausa antes de mostrar el cartel de resultados */
+            Thread.sleep(3000); 
+            difundirMensaje("\n================ RESULTADOS FINALES ================");
+            
+            if (puntosCrupier > 21) {
+                difundirMensaje("[CRUPIER] ¡Me pasé de 21 puntos! (" + puntosCrupier + ")");
             } else {
-                difundirMensaje("🤝 " + nombre + " empató con la casa (" + puntosJugador + " puntos).");
+                difundirMensaje("[CRUPIER] Puntos finales de la casa: " + puntosCrupier);
             }
+            difundirMensaje("----------------------------------------------------");
+            
+            /** Pausa de 1 segundo antes de empezar a revisar las manos */
+            Thread.sleep(5000); 
+
+            /** Quien gano */
+            for (HiloCliente jugador : jugadores) {
+                int puntosJugador = calcularPuntos(jugador.getMano());
+                String nombre = jugador.getNombre();
+
+                if (puntosJugador > 21) {
+                    difundirMensaje(nombre + " perdió (Se pasó con " + puntosJugador + " puntos).");
+                } else if (puntosCrupier > 21) {
+                    difundirMensaje(nombre + " ganó (" + puntosJugador + " puntos). ¡La casa se pasó!");
+                } else if (puntosJugador > puntosCrupier) {
+                    difundirMensaje(nombre + " ganó (" + puntosJugador + " vs " + puntosCrupier + ").");
+                } else if (puntosJugador < puntosCrupier) {
+                    difundirMensaje(nombre + " perdió (" + puntosJugador + " vs " + puntosCrupier + ").");
+                } else {
+                    difundirMensaje(nombre + " empató con la casa (" + puntosJugador + " puntos).");
+                }
+                
+                /** Pausa de 1.2 segundos entre cada jugador para poder leerlo bien */
+                Thread.sleep(3000); 
+            }
+            
+            difundirMensaje("====================================================\n");
+            difundirMensaje("[SERVIDOR] Partida finalizada.");
+            
+        } catch (InterruptedException e) {
+            /** @throws InterruptedException Si se interrumpe la revelación de ganadores */
+            System.err.println("[SERVIDOR] Error en los tiempos de resultados: " + e.getMessage());
         }
-        difundirMensaje("====================================================\n");
-        difundirMensaje("[SERVIDOR] Partida finalizada.");
     }
 }
