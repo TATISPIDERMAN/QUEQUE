@@ -77,7 +77,7 @@ public class Servidor {
         baraja.clear(); 
 
         /** Valores y palos */
-        String[] palos = { "♥", "♦", "♣", "♠" };
+        String[] palos = { " Diamante", " Corazón", " Trebol", " Picas" };
         String[] valores = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "As" };
 
         /** Combinamiento de cartas */
@@ -104,7 +104,21 @@ public class Servidor {
 
         for (String carta : mano) {
             /** Le quitamos el palo(♥, ♦, ♣, ♠) */
-            String valor = carta.substring(0, carta.length() - 1);
+            String valor = "";
+            if (carta.startsWith("10")) {
+                valor = "10";
+            } else if (carta.startsWith("J")) {
+                valor = "J";
+            } else if (carta.startsWith("Q")) {
+                valor = "Q";
+            } else if (carta.startsWith("K")) {
+                valor = "K";
+            } else if (carta.startsWith("As")) {
+                valor = "As";
+            } else {
+                // Si es un número del 2 al 9, agarramos solo el primer carácter
+                valor = String.valueOf(carta.charAt(0));
+            }
 
             if (valor.equals("J") || valor.equals("Q") || valor.equals("K")) {
                 /** Si es j,q o k valen 10 */
