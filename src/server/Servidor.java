@@ -258,7 +258,7 @@ public class Servidor {
             }
             difundirMensaje("----------------------------------------------------");
             
-            /** Pausa de 1 segundo antes de empezar a revisar las manos */
+            /** Pausa antes de empezar a revisar las manos */
             Thread.sleep(5000); 
 
             /** Quien gano */
@@ -278,7 +278,7 @@ public class Servidor {
                     difundirMensaje(nombre + " empató con la casa (" + puntosJugador + " puntos).");
                 }
                 
-                /** Pausa de 1.2 segundos entre cada jugador para poder leerlo bien */
+                /** Pausa entre cada jugador para poder leerlo bien */
                 Thread.sleep(3000); 
             }
             
